@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A... love letter ? 🫣</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sacramento&family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src='https://cdn.jsdelivr.net/npm/canvas-confetti@1/dist/confetti.browser.min.js'></script>
+
+    <style>
+        /* --- 1. Global Styles & Theme (Consistent with index.html) --- */
+        :root {
+            --primary-love: #B91899;
+            --secondary-love: #ff85c0;
+            --accent-gold: #FFD700;
+            --background-dark: #1a0210;
+            --text-light: #fdeaf5;
+            --font-heading: 'Montserrat', sans-serif;
+            --font-body: 'Playfair Display', serif;
+            --font-sans: 'Montserrat', sans-serif;
+            --paper-bg: #fffcfd; /* Slightly warm white for paper */
+            --paper-text: #401a2c; /* Dark berry color for text */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            /* Allow scrolling *only if* letter is too long */
+            overflow-x: hidden; 
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-light);
+            background: linear-gradient(-45deg, var(--background-dark), #4b062c, var(--primary-love), #2e031a);
+            background-size: 400% 400%;
+            animation: gradientBG 20s ease infinite;
+            /* Center the letter container */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem 1rem; /* Add padding for small screens */
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- 2. Floating Petals Background --- */
+        #petals-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .petal {
+            position: absolute;
+            top: -50px; /* Start from top */
+            font-size: 1.5rem;
+            color: var(--secondary-love);
+            opacity: 0;
+            animation: floatPetal 15s linear infinite;
+        }
+        
+        /* Simpler heart icon for petals */
+        .petal i {
+            animation: spinPetal 5s linear infinite;
+        }
+
+        @keyframes floatPetal {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0.7;
+            }
+            100% {
+                /* Fall down and move sideways */
+                transform: translateY(110vh) translateX(10vw) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes spinPetal {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- 3. Back Button --- */
+        .back-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            padding: 0.75rem 1.25rem;
+            border-radius: 50px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-family: var(--font-sans);
+            font-weight: 400;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: var(--primary-love);
+            color: white;
+            box-shadow: 0 0 15px var(--primary-love);
+            transform: scale(1.05);
+        }
+
+        /* --- 4. Main Letter Content --- */
+        #letter-container {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            width: 100%;
+            margin: 2rem 0;
+            /* Animation: Letter unfolds */
+            opacity: 0;
+            transform: perspective(1000px) rotateX(-20deg) translateY(50px);
+            animation: unfoldLetter 1.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+            animation-delay: 0.5s;
+        }
+
+        @keyframes unfoldLetter {
+            to {
+                opacity: 1;
+                transform: perspective(1000px) rotateX(0deg) translateY(0);
+            }
+        }
+
+        .letter-paper {
+            background: var(--paper-bg);
+            color: var(--paper-text);
+            border-radius: 10px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            padding: 4rem 5rem;
+            position: relative;
+            border: 1px solid var(--secondary-love);
+        }
+
+        /* The wax seal */
+        .seal {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            background: var(--primary-love);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border: 3px solid var(--paper-bg);
+        }
+        
+        /* --- 5. Letter Text Styling --- */
+        .letter-paper h2 {
+            font-family: var(--font-body);
+            font-size: 2.8em;
+            color: var(--primary-love);
+            text-align: center;
+            margin-bottom: 2.5rem;
+            font-weight: 700;
+        }
+
+        /* The main letter body text */
+        .letter-body {
+            font-family: var(--font-heading);
+            font-size: 2.6em; /* Sacramento font needs to be large */
+            line-height: 2.2;
+            text-align: left;
+            color: var(--paper-text);
+        }
+
+        /* The signature */
+        .signature {
+            font-family: var(--font-heading);
+            font-size: 1em;
+            text-align: right;
+            margin-top: 1rem;
+            color: var(--primary-love);
+            font-weight: 7;
+        }
+
+        /* --- 6. Confetti Button --- */
+        .button-container {
+            text-align: center;
+            margin-top: 2rem;
+            /* Fade in after letter */
+            opacity: 0;
+            animation: fadeInButton 1s 2s forwards;
+        }
+        
+        @keyframes fadeInButton {
+            to { opacity: 1; }
+        }
+
+        .confetti-button {
+            background: linear-gradient(45deg, var(--primary-love), var(--secondary-love));
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: 700;
+            font-family: var(--font-body);
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(230, 0, 122, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .confetti-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(230, 0, 122, 0.6);
+        }
+
+        /* --- 7. Responsive Design --- */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 4rem 1rem;
+            }
+            
+            .back-link {
+                top: 10px;
+                left: 10px;
+                padding: 0.5rem 1rem;
+                font-size: 0.9em;
+            }
+
+            .letter-paper {
+                padding: 4rem 2rem 2rem 2rem; /* Less padding on sides */
+            }
+
+            .letter-paper h2 {
+                font-size: 1em;
+            }
+
+            .letter-body {
+                font-size: 1em; /* Slightly smaller on mobile */
+                line-height: 1;
+            }
+
+            .signature {
+                font-size: 2.2em;
+            }
+
+            .confetti-button {
+                font-size: 1em;
+                padding: 0.8rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="petals-container"></div>
+
+    <a href="index.html" class="back-link">
+        <i class="fa-solid fa-arrow-left"></i> Back
+    </a>
+
+    <main id="letter-container">
+        <div class="letter-paper">
+            
+            <div class="seal"><i class="fa-solid fa-heart"></i></div>
+            
+            <p class="letter-body">
+                My kiana,
+                <br><br>
+                words aren't enough to express how much I love you 😭❤️ you make me the happiest your presence alone is healing 🥹 I'm so lucky and thankful to have you I promise to love you forever ever until I die and even after 👉👈❤️
+                <br><br>
+                I'm so obsessed with you every single thought, every single dream I have is about you 🥺❤️ you're running in my mind 24/7 and it's so good makes me so happy 🥹🥹
+                <br><br>
+                I can't wait for us to meet 😭❤️ I wanna marry you and have a family with you 🥹❤️ I'm craving for your touch 😣❤️
+            </p>
+            
+            <p class="signature">
+                I love you,<br>
+                Your Dono forever ❤️
+            </p>
+        </div>
+
+        <div class="button-container">
+            <button class="confetti-button" onclick="triggerConfetti()">
+                <i class="fa-solid fa-gift"></i> Click me ! (don't worry not a trap 🥺)
+            </button>
+        </div>
+    </main>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            // --- 1. Floating Petals Logic ---
+            const petalsContainer = document.getElementById('petals-container');
+
+            function createPetal() {
+                if (petalsContainer) {
+                    const petal = document.createElement('div');
+                    petal.classList.add('petal');
+                    
+                    petal.innerHTML = '<i class="fa-solid fa-heart"></i>';
+                    
+                    petal.style.left = Math.random() * 100 + 'vw';
+                    // Stagger horizontal movement
+                    petal.style.animationDuration = (Math.random() * 8 + 10) + 's'; // 10-18 seconds
+                    petal.style.opacity = Math.random() * 0.4 + 0.3; // 0.3-0.7
+                    // Stagger start time
+                    petal.style.animationDelay = Math.random() * 5 + 's';
+                    
+                    petalsContainer.appendChild(petal);
+
+                    // Remove petal after animation
+                    setTimeout(() => {
+                        petal.remove();
+                    }, 18000); // 18 seconds
+                }
+            }
+            
+            // Create a new petal every 700ms
+            setInterval(createPetal, 700);
+
+        });
+
+        // --- 2. Confetti Effect ---
+        function triggerConfetti() {
+            if (typeof confetti !== 'undefined') {
+                confetti({
+                    particleCount: 200,
+                    spread: 120,
+                    origin: { y: 0.6 },
+                    colors: ['#E6007A', '#FFD700', '#FFFFFF', '#FF85C0']
+                });
+            }
+        }
+    </script>
+
+</body>
+</html>
+<title>Background Music</title>
+<style>
+
+/* --- MAIN WIDGET WRAPPER (TOP-RIGHT) --- */
+.music-box {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;    /* moved from left to right */
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* align panel under the button on the right */
+}
+
+/* --- SMALL TOGGLE BUTTON (closed) --- */
+.music-toggle-btn {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #ff4dc4, #b026ff);
+  border-radius: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
+  box-shadow: 0 0 12px rgba(255, 0, 128, 0.7),
+              0 0 20px rgba(176, 38, 255, 0.5);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover animation */
+.music-toggle-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 16px rgba(255, 105, 180, 0.85),
+              0 0 26px rgba(170, 50, 255, 0.7);
+}
+
+/* --- EXPANDING PANEL (drops downward under the right side button) --- */
+.music-panel {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(6px);
+  margin-top: 8px;
+  padding: 12px;
+  width: 190px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 0 15px rgba(255, 0, 128, 0.3),
+              0 0 25px rgba(176, 38, 255, 0.25);
+
+  /* hidden initially */
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* When open */
+.music-panel.open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* buttons inside */
+.music-panel button {
+  border: none;
+  background: #ff58d8;
+  color: white;
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(255, 0, 170, 0.4);
+  transition: 0.2s ease;
+}
+
+.music-panel button:hover {
+  background: #e94cc1;
+  transform: translateY(-2px);
+}
+
+/* slider */
+.music-panel input[type="range"] {
+  width: 100%;
+  accent-color: #ff4dc4;
+}
+
+/* hidden label */
+.visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- Music -->
+<audio id="bg-audio"
+       src="https://github.com/discordotakoo/song/raw/refs/heads/main/music.mp3"
+       loop preload="auto">
+</audio>
+
+<!-- WIDGET -->
+<div class="music-box">
+
+  <!-- Small pink button -->
+  <div class="music-toggle-btn" id="music-open">💖</div>
+
+  <!-- Sliding panel -->
+  <div class="music-panel" id="music-panel" aria-live="polite">
+    <button id="music-toggle" aria-pressed="false">Play</button>
+    <label for="music-vol" class="visually-hidden">Music volume</label>
+    <input id="music-vol" type="range" min="0" max="1" step="0.01" value="0.25">
+  </div>
+
+</div>
+
+
+<script>
+(function () {
+  const audio = document.getElementById('bg-audio');
+  const toggle = document.getElementById('music-toggle');
+  const vol = document.getElementById('music-vol');
+  const panel = document.getElementById('music-panel');
+  const openBtn = document.getElementById('music-open');
+  
+  const LS_KEY = 'bg-music-playing';
+  
+  /* PANEL TOGGLE */
+  openBtn.addEventListener('click', () => {
+    panel.classList.toggle('open');
+  });
+
+  /* DEFAULTS */
+  audio.volume = parseFloat(vol.value) || 0.25;
+
+  function updateButton() {
+    if (audio.paused) {
+      toggle.textContent = 'Play';
+      toggle.setAttribute('aria-pressed', 'false');
+    } else {
+      toggle.textContent = 'Pause';
+      toggle.setAttribute('aria-pressed', 'true');
+    }
+  }
+
+  /* TRY AUTOPLAY */
+  function tryAutoplay() {
+    const wantPlaying = localStorage.getItem(LS_KEY) === 'true';
+    if (!wantPlaying) return;
+    audio.play().then(updateButton).catch(() => {});
+  }
+
+  /* USER GESTURE */
+  function enableOnUserGesture() {
+    function handler() {
+      if (audio.paused) audio.play().catch(() => {});
+      ['click','keydown','touchstart'].forEach(e =>
+        document.removeEventListener(e, handler, {passive:true})
+      );
+    }
+    ['click','keydown','touchstart'].forEach(e =>
+      document.addEventListener(e, handler, {passive:true})
+    );
+  }
+
+  /* PLAY/PAUSE BUTTON */
+  toggle.addEventListener('click', () => {
+    if (audio.paused) {
+      audio.play().then(() => {
+        localStorage.setItem(LS_KEY, 'true');
+        updateButton();
+      });
+    } else {
+      audio.pause();
+      localStorage.setItem(LS_KEY, 'false');
+      updateButton();
+    }
+  });
+
+  /* VOLUME */
+  vol.addEventListener('input', e => {
+    audio.volume = parseFloat(e.target.value);
+  });
+
+  /* SYNC UI */
+  audio.addEventListener('play', updateButton);
+  audio.addEventListener('pause', updateButton);
+
+  /* INIT */
+  (function init() {
+    if (localStorage.getItem(LS_KEY) === 'true') {
+      tryAutoplay();
+      enableOnUserGesture();
+    } else {
+      enableOnUserGesture();
+    }
+    updateButton();
+  })();
+})();
+</script>
+
+</body>
+</html>
+<!-- Invisible button -->
+<button id="secretButton"
+        style="
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            opacity: 0;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+        ">
+</button>
+
+<!-- Overlay for modal -->
+<div id="overlay" style="
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    z-index: 9998;
+"></div>
+
+<!-- Code popup -->
+<div id="codePopup" style="
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: deeppink;
+    color: white;
+    padding: 25px;
+    border-radius: 25px;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    z-index: 9999;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+">
+    <!-- Close button -->
+    <button id="closePopup" style="
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+    ">✕</button>
+
+    <div id="enteredCode" style="font-size: 32px; margin-bottom: 20px; letter-spacing: 8px;">♡♡♡♡♡♡</div>
+    <div style="display: grid; grid-template-columns: repeat(3, 70px); gap: 15px; justify-content: center;">
+        <!-- Number buttons -->
+        <button class="numBtn">1</button>
+        <button class="numBtn">2</button>
+        <button class="numBtn">3</button>
+        <button class="numBtn">4</button>
+        <button class="numBtn">5</button>
+        <button class="numBtn">6</button>
+        <button class="numBtn">7</button>
+        <button class="numBtn">8</button>
+        <button class="numBtn">9</button>
+        <button class="numBtn">0</button>
+        <button id="clearBtn">⌫</button>
+        <button id="okBtn">✓</button>
+    </div>
+</div>
+
+<style>
+/* Style number buttons like phone lock screen */
+.numBtn, #clearBtn, #okBtn {
+    background: #fffacd; /* pastel yellow */
+    border: none;
+    border-radius: 50%; /* circular */
+    width: 70px;
+    height: 70px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    font-family: 'Montserrat', sans-serif;
+}
+
+.numBtn:hover, #clearBtn:hover, #okBtn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 10px rgba(0,0,0,0.3);
+}
+
+/* Close button hover effect */
+#closePopup:hover {
+    transform: scale(1.2);
+    color: #ffebeb;
+}
+</style>
+
+<script>
+const secretCode = "030506";
+let enteredCode = "";
+
+// Show keypad when invisible button is clicked
+document.getElementById("secretButton").addEventListener("click", () => {
+    enteredCode = "";
+    updateDisplay();
+    document.getElementById("codePopup").style.display = "block";
+    document.getElementById("overlay").style.display = "block";
+});
+
+// Close button
+document.getElementById("closePopup").addEventListener("click", closePopup);
+
+// Close overlay when clicking outside
+document.getElementById("overlay").addEventListener("click", closePopup);
+
+function closePopup() {
+    document.getElementById("codePopup").style.display = "none";
+    document.getElementById("overlay").style.display = "none";
+    enteredCode = "";
+}
+
+// Update displayed code
+function updateDisplay() {
+    const display = enteredCode.padEnd(secretCode.length, "♡");
+    document.getElementById("enteredCode").innerText = display;
+}
+
+// Add number buttons
+document.querySelectorAll(".numBtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        if (enteredCode.length < secretCode.length) {
+            enteredCode += btn.innerText;
+            updateDisplay();
+        }
+    });
+});
+
+// Clear button
+document.getElementById("clearBtn").addEventListener("click", () => {
+    enteredCode = enteredCode.slice(0, -1);
+    updateDisplay();
+});
+
+// OK button
+document.getElementById("okBtn").addEventListener("click", () => {
+    if (enteredCode === secretCode) {
+        const audio = new Audio('https://github.com/discordotakoo/song/raw/refs/heads/main/20251122_142241.mp3');
+        audio.play();
+        alert("CONGRATS YOU FOUND IT ! 😝😝❤️");
+        closePopup();
+    } else {
+        alert("sorry but it's wrong you're gonna have to try again 😣❤️");
+        enteredCode = "";
+        updateDisplay();
+    }
+});
+</script>
